@@ -151,5 +151,7 @@ source "drivers/coresight/Kconfig"
 source "drivers/bif/Kconfig"
 
 source "drivers/sensors/Kconfig"
-
+# ZTE_MODIFY chenfei add mhl ic driver 2012/12/17 
+source "drivers/SiI8240/Kconfig"
+# ZTE_MODIFY end chenfei
 endmenu

@@ -593,6 +593,10 @@ static void input_dev_release_keys(struct input_dev *dev)
 
 	if (is_event_supported(EV_KEY, dev->evbit, EV_MAX)) {
 		for (code = 0; code <= KEY_MAX; code++) {
+			/** ZTE_MODIFY hezhibin add for quickboot */
+			if (code == KEY_POWER)
+				continue;
+		    /** ZTE_MODIFY end*/
 			if (is_event_supported(code, dev->keybit, KEY_MAX) &&
 			    __test_and_clear_bit(code, dev->key)) {
 				input_pass_event(dev, EV_KEY, code, 0);

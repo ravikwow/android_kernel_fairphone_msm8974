@@ -56,8 +56,8 @@ obj-$(CONFIG_TOUCHSCREEN_ST1232)	+= st1232.o
 obj-$(CONFIG_TOUCHSCREEN_STMPE)		+= stmpe-ts.o
 obj-$(CONFIG_TOUCHSCREEN_TI_TSCADC)	+= ti_tscadc.o
 obj-$(CONFIG_TOUCHSCREEN_TNETV107X)	+= tnetv107x-ts.o
-#obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_I2C_RMI)	+= synaptics_i2c_rmi.o
-#obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_RMI4_I2C) +=synaptics/
+obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_I2C_RMI)	+= synaptics_i2c_rmi.o
+obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_RMI4_I2C) +=synaptics/
 obj-$(CONFIG_TOUCHSCREEN_TOUCHIT213)	+= touchit213.o
 obj-$(CONFIG_TOUCHSCREEN_TOUCHRIGHT)	+= touchright.o
 obj-$(CONFIG_TOUCHSCREEN_TOUCHWIN)	+= touchwin.o
@@ -80,9 +80,17 @@ obj-$(CONFIG_TOUCHSCREEN_MSM_LEGACY)		+= msm_touch.o
 obj-$(CONFIG_TOUCHSCREEN_CY8C_TS)	+= cy8c_ts.o
 obj-$(CONFIG_TOUCHSCREEN_CYTTSP_I2C_QC)       += cyttsp-i2c-qc.o
 obj-$(CONFIG_TOUCHSCREEN_FT5X06)	+= ft5x06_ts.o
-#obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_DSX_RMI4_DEV)	+= synaptics_rmi_dev.o
-#obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_DSX_FW_UPDATE) 	+= synaptics_fw_update.o
-#obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_I2C_RMI4)		+= synaptics_i2c_rmi4.o
+obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_I2C_RMI4)		+= synaptics_i2c_rmi4.o
+obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_DSX_RMI4_DEV)	+= synaptics_rmi_dev.o
+obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_DSX_FW_UPDATE) 	+= synaptics_fw_update.o
+# ZTE_MODIFY wangzhanmeng add for synaptics touchscreen driver  in build   20130513,del for no use 20130527
+# ZTE_MODIFY wangzhanmeng,  enable this two config for compatible 20130529
+obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS)	+= synaptics_rmi.o
+obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_FW)	+= synaptics_rmi_fw.o
+# ZTE_MODIFY wangzhanmeng,  enable this two config for compatible end
+# ZTE_MODIFY wangzhanmeng add for synaptics touchscreen driver  in build   end
+
+# ZTE_MODIFY wangzhanmeng,  added for synaptics DSX touchscreen driver 20130514
+obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_DSX_ZTE)+= synaptics_zte/
+# ZTE_MODIFY wangzhanmeng,  added for synaptics DSX touchscreen driver end
 obj-$(CONFIG_TOUCHSCREEN_GT9XX)		+= gt9xx/
-obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_DSX)+= synaptics_dsx/
-obj-$(CONFIG_TOUCHSCREEN_ITS)+= ilitek/

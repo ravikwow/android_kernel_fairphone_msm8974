@@ -20,72 +20,73 @@
 #ifndef _SYNAPTICS_DSX_H_
 #define _SYNAPTICS_DSX_H_
 
-#define PLATFORM_DRIVER_NAME "synaptics_dsx"
-#define ACTIVE_PEN_DRIVER_NAME "synaptics_dsx_active_pen"
-#define PROXIMITY_DRIVER_NAME "synaptics_dsx_proximity"
-#define I2C_DRIVER_NAME "synaptics_dsx_i2c"
-#define SPI_DRIVER_NAME "synaptics_dsx_spi"
-
 /*
- * struct synaptics_dsx_button_map - button map
- * @nbuttons: number of buttons
- * @map: pointer to array of button codes
+ * synaptics_dsx_cap_button_map - 0d button map
+ * @nbuttons: number of 0d buttons
+ * @map: pointer to array of button types
  */
-struct synaptics_dsx_button_map {
+struct synaptics_dsx_cap_button_map {
 	unsigned char nbuttons;
-	unsigned int *map;
+	u32 *map;
 };
 
 /*
- * struct synaptics_dsx_board_data - DSX board data
+ * struct synaptics_dsx_platform_data - dsx platform data
  * @x_flip: x flip flag
  * @y_flip: y flip flag
- * @swap_axes: swap axes flag
- * @irq_gpio: attention interrupt GPIO
- * @irq_on_state: attention interrupt active state
- * @power_gpio: power switch GPIO
- * @power_on_state: power switch active state
- * @reset_gpio: reset GPIO
- * @reset_on_state: reset active state
- * @max_y_for_2d: maximum y value for 2D area when virtual buttons are present
- * @irq_flags: IRQ flags
- * @device_descriptor_addr: HID device descriptor address
- * @panel_x: x-axis resolution of display panel
- * @panel_y: y-axis resolution of display panel
- * @power_delay_ms: delay time to wait after powering up device
- * @reset_delay_ms: delay time to wait after resetting device
- * @reset_active_ms: reset active time
- * @byte_delay_us: delay time between two bytes of SPI data
- * @block_delay_us: delay time between two SPI transfers
- * @bus_reg_name: pointer to name of regulator for bus pullup control
- * @cap_button_map: pointer to 0D button map
- * @vir_button_map: pointer to virtual button map
+ * @regulator_en: regulator enable flag
+ * @reset_gpio: reset gpio
+ * @irq_gpio: attention interrupt gpio
+ * @irq_flags: irq flags
+ * @panel_x: panel maximum values on the x
+ * @panel_y: panel maximum values on the y
+ * @disp_maxx: display panel maximum values on the x
+ * @disp_maxy: display panel maximum values on the y
+ * @disp_minx: display panel minimum values on the x
+ * @disp_miny: display panel minimum values on the y
+ * @panel_maxx: touch panel maximum values on the x
+ * @panel_maxy: touch panel maximum values on the y
+ * @panel_minx: touch panel minimum values on the x
+ * @panel_miny: touch panel minimum values on the y
+ * @reset_delay: reset delay
+ * @gpio_config: pointer to gpio configuration function
+ * @cap_button_map: pointer to 0d button map
  */
-struct synaptics_dsx_board_data {
+struct synaptics_dsx_platform_data {
 	bool x_flip;
 	bool y_flip;
-	bool swap_axes;
-	int irq_gpio;
-	int irq_on_state;
-	int power_gpio;
-	int power_on_state;
+	bool regulator_en;
 	int reset_gpio;
-	int reset_on_state;
-	int max_y_for_2d;
+	int en_5v_gpio;
+	int irq_gpio;
 	unsigned long irq_flags;
-	unsigned short device_descriptor_addr;
 	unsigned int panel_x;
 	unsigned int panel_y;
-	unsigned int power_delay_ms;
-	unsigned int reset_delay_ms;
-	unsigned int reset_active_ms;
-	unsigned int byte_delay_us;
-	unsigned int block_delay_us;
-	const char *bus_reg_name;
-	struct synaptics_dsx_button_map *cap_button_map;
-	struct synaptics_dsx_button_map *vir_button_map;
-};
+	int (*gpio_config)(int gpio, bool configure);
+	struct synaptics_dsx_cap_button_map *cap_button_map;
 
-extern struct synaptics_dsx_board_data *synaptics_touch_bdata;
+	/* touch panel's minimum and maximum coordinates */
+	u32 panel_minx;
+	u32 panel_maxx;
+	u32 panel_miny;
+	u32 panel_maxy;
+
+	/* display's minimum and maximum coordinates */
+	u32 disp_minx;
+	u32 disp_maxx;
+	u32 disp_miny;
+	u32 disp_maxy;
+	u32 reset_gpio_flags;
+	u32 en_5v_gpio_flags;
+	u32 irq_gpio_flags;
+
+	bool	i2c_pull_up;
+	bool	digital_pwr_regulator;
+	int *key_codes;
+	bool need_calibration;
+	bool no_force_update;
+	u8 bl_addr;
+
+};
 
 #endif

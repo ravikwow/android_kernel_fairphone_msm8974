@@ -42,7 +42,9 @@ obj-$(CONFIG_CONNECTOR)		+= connector/
 # i810fb and intelfb depend on char/agp/
 obj-$(CONFIG_FB_I810)           += video/i810/
 obj-$(CONFIG_FB_INTEL)          += video/intelfb/
-
+# ZTE_MODIFY chenfei add mhl ic driver 2012/12/17 
+obj-$(CONFIG_SII8240_MHL_TX)	+= SiI8240/
+# ZTE_MODIFY end chenfei
 obj-$(CONFIG_PARPORT)		+= parport/
 obj-y				+= base/ block/ misc/ mfd/ nfc/
 obj-$(CONFIG_NUBUS)		+= nubus/

@@ -26,8 +26,7 @@
 	};
 
 	qcom,mdss_dsi@fd922800 {
-		qcom,dsi-pref-prim-pan = <&dsi_otm1902b_1080p_cmd>;
-		/*qcom,dsi-pref-prim-pan = <&dsi_s6d6fa1_1080p_video>;*/
+		qcom,dsi-pref-prim-pan = <&dsi_tosh_720_vid>;
 	};
 
 	qcom,mdss_mdp@fd900000 {
@@ -757,14 +756,6 @@
 				50>;
 		qcom,channel-type = <0x1540>;
 	};
-};
-
-&dsi_otm1902b_1080p_cmd {
-       qcom,cont-splash-enabled;
-};
-
-&dsi_s6d6fa1_1080p_video {
-       qcom,cont-splash-enabled;
 };
 
 &dsi_generic_720p_cmd {

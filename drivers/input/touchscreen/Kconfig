@@ -497,6 +497,14 @@ config TOUCHSCREEN_SYNAPTICS_RMI4_I2C
 	help
 	  This enables support for Synaptics RMI over I2C based touchscreens(ClearPad 3000).
 
+# ZTE_MODIFY wangzhanmeng,  added for synaptics DSX touchscreen driver 20130514
+config TOUCHSCREEN_SYNAPTICS_DSX_ZTE
+			  bool "zte using Synaptics DSX touchscreen"
+			  depends on I2C
+			  default y
+source "drivers/input/touchscreen/synaptics_zte/Kconfig"
+# ZTE_MODIFY wangzhanmeng,  added for synaptics DSX touchscreen driver end
+
 config SYNA_MULTI_TOUCH
 	tristate "Synaptics i2c touchscreen(ClearPad 3000) MutilTouch support"
 	depends on TOUCHSCREEN_SYNAPTICS_RMI4_I2C
@@ -996,6 +1004,41 @@ config TOUCHSCREEN_SYNAPTICS_DSX_RMI4_DEV
 	  To compile this driver as a module, choose M here: the
 	  module will be called synaptics_dsx_rmi4_dev.
 
+config TOUCHSCREEN_SYNAPTICS_DSX_FW_UPDATE
+	tristate "Synaptics I2C touchscreen firmware update"
+	depends on TOUCHSCREEN_SYNAPTICS_I2C_RMI4
+	help
+	  This enables support for firmware update for Synaptics RMI4
+	  touchscreens.
+
+	  Say Y here if you have a Synaptics DSX I2C touchscreen
+	  connected to your system.
+
+	  If unsure, say N.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called synaptics_dsx_fw_update.
+	  
+# ZTE_MODIFY wangzhanmeng add for synaptics touchscreen driver  in build   20130513,del for no use ,20130527
+# ZTE_MODIFY wangzhanmeng,  enable this two config for compatible 20130529
+config TOUCHSCREEN_SYNAPTICS
+	tristate "Synaptics i2c touchscreen"
+	depends on I2C
+	help
+	  This enables support for Synaptics RMI over I2C based touchscreens.
+
+	help
+	  This enables Synaptics 5V_en.  
+	  
+	  
+config TOUCHSCREEN_SYNAPTICS_FW
+	tristate "Synaptics i2c touchscreen firmware UPDATE"
+	depends on I2C
+	help
+	  This enables support for Synaptics RMI over I2C based touchscreens.
+# ZTE_MODIFY wangzhanmeng,  enable this two config for compatible end
+# ZTE_MODIFY wangzhanmeng add for synaptics touchscreen driver  in build   end
+
 config SECURE_TOUCH
 	bool "Secure Touch"
 	depends on TOUCHSCREEN_ATMEL_MXT
@@ -1016,7 +1059,5 @@ config TOUCHSCREEN_GT9XX
           If unsure, say N.
 
 source "drivers/input/touchscreen/gt9xx/Kconfig"
-source "drivers/input/touchscreen/synaptics_dsx/Kconfig"
-source "drivers/input/touchscreen/ilitek/Kconfig"
 
 endif

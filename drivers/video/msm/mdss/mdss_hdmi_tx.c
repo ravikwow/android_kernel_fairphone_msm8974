@@ -1243,6 +1243,12 @@ static int hdmi_tx_check_capability(struct hdmi_tx_ctrl *hdmi_ctrl)
 	hdcp_disabled = DSS_REG_R_ND(io,
 		QFPROM_RAW_FEAT_CONFIG_ROW0_LSB) & BIT(31);
 
+	/** ZTE_MODIFY niugang10089953 modify for P897A23 MHL **/
+	#ifdef CONFIG_SII8240_MHL_TX
+	hdcp_disabled = 1;
+	#endif
+	/** ZTE_MODIFY end **/
+
 	hdmi_disabled = DSS_REG_R_ND(io,
 		QFPROM_RAW_FEAT_CONFIG_ROW0_MSB) & BIT(0);
 

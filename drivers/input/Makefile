@@ -26,3 +26,4 @@ obj-$(CONFIG_INPUT_MISC)	+= misc/
 obj-$(CONFIG_INPUT_APMPOWER)	+= apm-power.o
 obj-$(CONFIG_INPUT_OF_MATRIX_KEYMAP) += of_keymap.o
 obj-$(CONFIG_INPUT_KEYRESET)	+= keyreset.o
+obj-$(CONFIG_AK8789_SWITCH)	+= ak8789-switch.o

@@ -113,15 +113,16 @@ static int synaptics_rmi4_reset_device(struct synaptics_rmi4_data *rmi4_data);
 
 static void synaptics_rmi4_sensor_wake(struct synaptics_rmi4_data *rmi4_data);
 
+static void synaptics_rmi4_sensor_sleep(struct synaptics_rmi4_data *rmi4_data);
+
 static int synaptics_rmi4_check_configuration(struct synaptics_rmi4_data
 		*rmi4_data);
 
-
+#ifdef CONFIG_PM
 static int synaptics_rmi4_suspend(struct device *dev);
 
 static int synaptics_rmi4_resume(struct device *dev);
 
-#ifdef CONFIG_PM
 static ssize_t synaptics_rmi4_full_pm_cycle_show(struct device *dev,
 		struct device_attribute *attr, char *buf);
 
@@ -424,31 +425,6 @@ static struct device_attribute attrs[] = {
 static bool exp_fn_inited;
 static struct mutex exp_fn_list_mutex;
 static struct list_head exp_fn_list;
-
-static int synaptics_rmi4_debug_suspend_set(void *_data, u64 val)
-{
-	struct synaptics_rmi4_data *rmi4_data = _data;
-
-	if (val)
-		synaptics_rmi4_suspend(&rmi4_data->input_dev->dev);
-	else
-		synaptics_rmi4_resume(&rmi4_data->input_dev->dev);
-
-	return 0;
-}
-
-static int synaptics_rmi4_debug_suspend_get(void *_data, u64 *val)
-{
-	struct synaptics_rmi4_data *rmi4_data = _data;
-
-	*val = rmi4_data->suspended;
-
-	return 0;
-}
-
-DEFINE_SIMPLE_ATTRIBUTE(debug_suspend_fops, synaptics_rmi4_debug_suspend_get,
-			synaptics_rmi4_debug_suspend_set, "%lld\n");
-
 #ifdef CONFIG_PM
 static ssize_t synaptics_rmi4_full_pm_cycle_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
@@ -472,6 +448,30 @@ static ssize_t synaptics_rmi4_full_pm_cycle_store(struct device *dev,
 
 	return count;
 }
+
+static int synaptics_rmi4_debug_suspend_set(void *_data, u64 val)
+{
+	struct synaptics_rmi4_data *rmi4_data = _data;
+
+	if (val)
+		synaptics_rmi4_suspend(&rmi4_data->input_dev->dev);
+	else
+		synaptics_rmi4_resume(&rmi4_data->input_dev->dev);
+
+	return 0;
+}
+
+static ssize_t synaptics_rmi4_debug_suspend_get(void *_data, u64 *val)
+{
+	struct synaptics_rmi4_data *rmi4_data = _data;
+
+	*val = rmi4_data->suspended;
+
+	return 0;
+}
+
+DEFINE_SIMPLE_ATTRIBUTE(debug_suspend_fops, synaptics_rmi4_debug_suspend_get,
+			synaptics_rmi4_debug_suspend_set, "%lld\n");
 
 #ifdef CONFIG_FB
 static void configure_sleep(struct synaptics_rmi4_data *rmi4_data)
@@ -502,11 +502,6 @@ static void configure_sleep(struct synaptics_rmi4_data *rmi4_data)
 	return;
 }
 #endif
-#else
-static void configure_sleep(struct synaptics_rmi4_data *rmi4_data)
-{
-	return;
-}
 #endif
 
 static ssize_t synaptics_rmi4_f01_reset_store(struct device *dev,
@@ -812,27 +807,21 @@ static int synaptics_rmi4_i2c_write(struct synaptics_rmi4_data *rmi4_data,
 {
 	int retval;
 	unsigned char retry;
-	unsigned char *buf;
-	struct i2c_msg msg[1];
-
-	buf = kzalloc(length + 1, GFP_KERNEL);
-	if (!buf) {
-		dev_err(&rmi4_data->i2c_client->dev,
-				"%s: Failed to alloc mem for buffer\n",
-				__func__);
-		return -ENOMEM;
-	}
+	unsigned char buf[length + 1];
+	struct i2c_msg msg[] = {
+		{
+			.addr = rmi4_data->i2c_client->addr,
+			.flags = 0,
+			.len = length + 1,
+			.buf = buf,
+		}
+	};
 
 	mutex_lock(&(rmi4_data->rmi4_io_ctrl_mutex));
 
 	retval = synaptics_rmi4_set_page(rmi4_data, addr);
 	if (retval != PAGE_SELECT_LEN)
 		goto exit;
-
-	msg[0].addr = rmi4_data->i2c_client->addr;
-	msg[0].flags = 0;
-	msg[0].len = length + 1;
-	msg[0].buf = buf;
 
 	buf[0] = addr & MASK_8BIT;
 	memcpy(&buf[1], &data[0], length);
@@ -857,7 +846,6 @@ static int synaptics_rmi4_i2c_write(struct synaptics_rmi4_data *rmi4_data,
 
 exit:
 	mutex_unlock(&(rmi4_data->rmi4_io_ctrl_mutex));
-	kfree(buf);
 
 	return retval;
 }
@@ -1627,12 +1615,6 @@ static int synaptics_rmi4_f11_init(struct synaptics_rmi4_data *rmi4_data,
 	rmi4_data->max_touch_width = MAX_F11_TOUCH_WIDTH;
 
 	fhandler->intr_reg_num = (intr_count + 7) / 8;
-	if (fhandler->intr_reg_num >= MAX_INTR_REGISTERS) {
-		fhandler->intr_reg_num = 0;
-		fhandler->num_of_data_sources = 0;
-		fhandler->intr_mask = 0;
-		return -EINVAL;
-	}
 	if (fhandler->intr_reg_num != 0)
 		fhandler->intr_reg_num -= 1;
 
@@ -1839,13 +1821,6 @@ static int synaptics_rmi4_f12_init(struct synaptics_rmi4_data *rmi4_data,
 			rmi4_data->num_of_tx);
 
 	fhandler->intr_reg_num = (intr_count + 7) / 8;
-	if (fhandler->intr_reg_num >= MAX_INTR_REGISTERS) {
-		fhandler->intr_reg_num = 0;
-		fhandler->num_of_data_sources = 0;
-		fhandler->intr_mask = 0;
-		retval = -EINVAL;
-		goto free_function_handler_mem;
-	}
 	if (fhandler->intr_reg_num != 0)
 		fhandler->intr_reg_num -= 1;
 
@@ -1978,13 +1953,6 @@ static int synaptics_rmi4_f1a_init(struct synaptics_rmi4_data *rmi4_data,
 	fhandler->num_of_data_sources = fd->intr_src_count;
 
 	fhandler->intr_reg_num = (intr_count + 7) / 8;
-	if (fhandler->intr_reg_num >= MAX_INTR_REGISTERS) {
-		fhandler->intr_reg_num = 0;
-		fhandler->num_of_data_sources = 0;
-		fhandler->intr_mask = 0;
-		retval = -EINVAL;
-		goto error_exit;
-	}
 	if (fhandler->intr_reg_num != 0)
 		fhandler->intr_reg_num -= 1;
 
@@ -2300,10 +2268,10 @@ static int synaptics_rmi4_query_device(struct synaptics_rmi4_data *rmi4_data)
 						&rmi->support_fn_list_mutex);
 				} else {
 					if (fhandler->fn_number ==
-							SYNAPTICS_RMI4_F1A) {
+							SYNAPTICS_RMI4_F1A)
 						synaptics_rmi4_f1a_kfree(
 							fhandler);
-					} else {
+					else {
 						kfree(fhandler->data);
 						kfree(fhandler->extra);
 					}
@@ -2318,8 +2286,7 @@ flash_prog_mode:
 	dev_dbg(&rmi4_data->i2c_client->dev,
 			"%s: Number of interrupt registers = %d\n",
 			__func__, rmi4_data->num_of_intr_regs);
-	if (rmi4_data->num_of_intr_regs >= MAX_INTR_REGISTERS)
-		return -EINVAL;
+
 	memset(rmi4_data->intr_mask, 0x00, sizeof(rmi4_data->intr_mask));
 
 	/*
@@ -3698,14 +3665,6 @@ static int synaptics_rmi4_check_configuration(struct synaptics_rmi4_data
 {
 	return 0;
 };
-static int synaptics_rmi4_suspend(struct device *dev);
-{
-	return 0;
-}
-static int synaptics_rmi4_resume(struct device *dev);
-{
-	return 0;
-}
 #endif
 
 static const struct i2c_device_id synaptics_rmi4_id_table[] = {

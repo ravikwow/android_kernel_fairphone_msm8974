@@ -471,6 +471,11 @@ struct input_keymap_entry {
 
 #define KEY_MICMUTE		248	/* Mute / unmute the microphone */
 
+/** ZTE_MODIFY yuehongliang add hall sensor, 2013-07-09 */
+#define KEY_HALL_SENSOR_DOWN	249
+#define KEY_HALL_SENSOR_UP	250
+/** ZTE_MODIFY end yuehongliang, 2013-07-09 */
+
 /* Code 255 is reserved for special needs of AT keyboard driver */
 
 #define BTN_MISC		0x100

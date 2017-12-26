@@ -10,6 +10,11 @@
  * GNU General Public License for more details.
  */
 
+/include/ "dsi-panel-lg-1080p-video.dtsi"/** ZTE_MODIFY chenfei added lcd driver 2013/05/21 */ 
+/include/ "dsi-panel-yassy-1080p-video.dtsi"
+/include/ "dsi-panel-tianma-1080p-video.dtsi"
+/include/ "dsi-panel-toshiba-720p-video.dtsi"
+/include/ "dsi-panel-orise-720p-video.dtsi"
 /include/ "msm8974-leds.dtsi"
 /include/ "msm8974-camera-sensor-cdp.dtsi"
 
@@ -25,13 +30,35 @@
 	};
 
 	qcom,mdss_dsi@fd922800 {
-		qcom,dsi-pref-prim-pan = <&dsi_tosh_720_vid>;
+		qcom,dsi-pref-prim-pan = <&dsi_lg_1080_vid>;
 	};
 
 	qcom,mdss_mdp@fd900000 {
 		qcom,mdss-pref-prim-intf = "dsi";
 	};
 
+	/** ZTE_MODIFY chenfei added lcd driver 2013/05/21 */ 
+	qcom,mdss_dsi_lg_1080p_video{
+		status = "ok";
+		qcom,cont-splash-enabled;
+	};
+
+	qcom,mdss_dsi_yassy_1080p_video{
+		status = "ok";
+		qcom,cont-splash-enabled;
+	};
+	
+	qcom,mdss_dsi_tianma_1080p_video{
+		status = "ok";
+		qcom,cont-splash-enabled;
+	};
+	
+	qcom,mdss_dsi_toshiba_720p_video {
+		status = "disable";
+		qcom,cont-splash-enabled;
+	};
+	/** ZTE_MODIFY end chenfei */ 
+	
 	qcom,mdss_dsi_orise_720p_video {
 		status = "disable";
 	};
@@ -134,6 +161,39 @@
 					];
 			};
 		};
+/** ZTE_MODIFY wangzhanmeng add for synaptics touchscreen driver  in build   20130513 */
+		syna-touchscreen@22 {
+			compatible = "synaptics,syna-ts";
+			reg = <0x22>;
+			interrupt-parent = <&msmgpio>;
+			interrupts = <61 0x2>;
+			vdd_ana-supply = <&pm8941_l18>;
+			vcc_i2c-supply = <&pm8941_lvs1>;
+			synaptics,reset-gpio = <&msmgpio 60 0x00>;
+			synaptics,irq-gpio = <&msmgpio 61 0x00>;
+			synaptics,panel-coords = <0  0 760 1424>;
+			synaptics,display-coords = <0 0 720 1280>;
+			synaptics,i2c-pull-up = <1>;
+			synaptics,button-codes = <158 102 139>;/** ZTE_MODIFY wangzhanmeng add for button 20130527 */
+		};
+		/*
+		touchscreen-syna@20 {
+			compatible = "touchscreen-rmi";
+			reg = <0x20>;
+			interrupt-parent = <&msmgpio>;
+			interrupts = <61 0x2>;
+			vdd_ana-supply = <&pm8941_l18>;
+			vcc_i2c-supply = <&pm8941_lvs1>;
+			synaptics,reset-gpio = <&msmgpio 60 0x00>;
+			synaptics,irq-gpio = <&msmgpio 61 0x00>;
+			synaptics,panel-coords = <0  0 760 1424>;
+			synaptics,display-coords = <0 0 720 1280>;
+			synaptics,i2c-pull-up = <1>;
+			synaptics,button-codes = <158 102 139>;
+		};
+		*/		
+/** ZTE_MODIFY wangzhanmeng add for synaptics touchscreen driver  in build   end */
+
 	};
 
 	gen-vkeys {
@@ -200,6 +260,16 @@
 			gpio-key,wakeup;
 			debounce-interval = <15>;
 		};
+		/** ZTE MODIFY huxiaobo for vol_down key config, 2013.06.03*/
+		vol_down {
+			label = "volume_down";
+			gpios = <&pm8941_gpios 2 0x1>;
+			linux,input-type = <1>;
+			linux,code = <114>;
+			gpio-key,wakeup;
+			debounce-interval = <15>;
+		};	
+		/** ZTE MODIFY end by huxiaobo for vol_down key config, 2013.06.03*/
 	};
 
 	spi@f9923000 {
@@ -472,6 +542,12 @@
 	};
 
 	gpio@c100 { /* GPIO 2 */
+	/** ZTE MODIFY huxiaobo for vol_down key config, 2013.06.03*/
+	    qcom,mode = <0>;
+		qcom,pull = <0>;
+		qcom,vin-sel = <2>;
+		qcom,src-sel = <0>;
+	/** end by ZTE MODIFY huxiaobo for vol_down key config, 2013.06.03*/
 	};
 
 	gpio@c200 { /* GPIO 3 */
@@ -759,33 +835,14 @@
        qcom,cont-splash-enabled;
 };
 
-&dsi_generic_720p_cmd {
+&dsi_tianma_1080_vid {
        qcom,cont-splash-enabled;
 };
 
-&dsi_jdi_1080_vid {
+&dsi_lg_1080_vid {
        qcom,cont-splash-enabled;
 };
 
-&dsi_dual_jdi_video_0 {
-	qcom,mdss-dsi-bl-pmic-control-type = "bl_ctrl_pwm";
-	qcom,mdss-dsi-bl-pmic-pwm-frequency = <100>;
-	qcom,mdss-dsi-bl-pmic-bank-select = <7>;
-	qcom,cont-splash-enabled;
+&dsi_yassy_1080_vid {
+       qcom,cont-splash-enabled;
 };
-
-&dsi_dual_jdi_video_1 {
-	qcom,cont-splash-enabled;
-};
-
-&dsi_dual_jdi_cmd_0 {
-	qcom,mdss-dsi-bl-pmic-control-type = "bl_ctrl_pwm";
-	qcom,mdss-dsi-bl-pmic-pwm-frequency = <100>;
-	qcom,mdss-dsi-bl-pmic-bank-select = <7>;
-	qcom,cont-splash-enabled;
-};
-
-&dsi_dual_jdi_cmd_1 {
-	qcom,cont-splash-enabled;
-};
-
